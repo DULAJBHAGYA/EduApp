@@ -1,10 +1,14 @@
 import 'package:eduapp/core/shared/widgets/bottom_navbar.dart';
 import 'package:eduapp/core/theme/appPallete.dart';
+import 'package:eduapp/features/student/course_desc/presentation/pages/course_description.dart';
+
 import 'package:eduapp/features/student/courses/data/dataSources/catagory_service.dart';
 import 'package:eduapp/features/student/courses/data/dataSources/count_service.dart';
-import 'package:eduapp/features/student/courses/data/dataSources/course_service.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:eduapp/features/student/courses/presentation/bloc/course_bloc.dart';
+import 'package:eduapp/features/student/courses/presentation/bloc/course_event.dart';
+import 'package:eduapp/features/student/courses/presentation/bloc/course_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -25,55 +29,18 @@ class StdAllCourses extends StatefulWidget {
 }
 
 class _StdAllCoursesState extends State<StdAllCourses> {
-  List<dynamic> _courses = [];
-  List<dynamic> _filteredCourses = [];
-  final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'ALL COURSES';
-
   @override
   void initState() {
     super.initState();
-    fetchCourses();
-    _searchController.addListener(_filterCourses);
+    BlocProvider.of<CourseBloc>(context).add(FetchCourses());
   }
 
-  @override
-  void dispose() {
-    _searchController.removeListener(_filterCourses);
-    _searchController.dispose();
-    super.dispose();
+  void _onSearchChanged(String query) {
+    BlocProvider.of<CourseBloc>(context).add(SearchCourses(query));
   }
 
-  Future<void> fetchCourses() async {
-    try {
-      final courseData = await CourseService.instance.fetchAllCourses();
-      setState(() {
-        _courses = courseData ?? [];
-        _filterCourses();
-      });
-    } catch (e) {
-      print('Error fetching courses: $e');
-    }
-  }
-
-  void _filterCourses() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredCourses = _courses.where((course) {
-        final title = course['title'].toLowerCase();
-        final category = course['catagory'].toLowerCase();
-        return title.contains(query) &&
-            (_selectedCategory == 'ALL COURSES' ||
-                category == _selectedCategory.toLowerCase());
-      }).toList();
-    });
-  }
-
-  void _selectCategory(String category) {
-    setState(() {
-      _selectedCategory = category;
-      _filterCourses();
-    });
+  void _onCategorySelected(String category) {
+    BlocProvider.of<CourseBloc>(context).add(SelectCategory(category));
   }
 
   @override
@@ -101,32 +68,45 @@ class _StdAllCoursesState extends State<StdAllCourses> {
               SizedBox(height: 10),
               // CustomSearchBar(
               //   controller: _searchController,
-              //   onChanged: (value) => _filterCourses(),
+              //   onChanged: (value) => _onSearchChanged(value),
               // ),
               SizedBox(height: 20),
               HorizontalListview(
                 username: widget.username,
                 accessToken: widget.accessToken,
                 refreshToken: widget.refreshToken,
-                selectedCategory: _selectedCategory,
-                onSelectCategory: _selectCategory,
+                selectedCategory: 'ALL COURSES',
+                onSelectCategory: _onCategorySelected,
               ),
               SizedBox(height: 20),
               Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: _filteredCourses.map((course) {
-                      return CourseViewCard(
-                        what_will: course['what_will'] ?? {},
-                        description: course['description'] ?? 'No Description',
-                        course_id: course['course_id'] ?? 0,
-                        image: course['image'] ?? '',
-                        title: course['title'] ?? 'No Title',
-                        catagory: course['catagory'] ?? 'Uncategorized',
+                child: BlocBuilder<CourseBloc, CourseState>(
+                  builder: (context, state) {
+                    if (state is CourseLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (state is CourseLoaded) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: state.filteredCourses.map((course) {
+                            return CourseViewCard(
+                              what_will: course['what_will'] ?? {},
+                              description:
+                                  course['description'] ?? 'No Description',
+                              course_id: course['course_id'] ?? 0,
+                              image: course['image'] ?? '',
+                              title: course['title'] ?? 'No Title',
+                              catagory: course['catagory'] ?? 'Uncategorized',
+                            );
+                          }).toList(),
+                        ),
                       );
-                    }).toList(),
-                  ),
+                    } else if (state is CourseError) {
+                      return Center(child: Text(state.message));
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
               ),
             ],
@@ -306,19 +286,19 @@ class _CourseViewCardState extends State<CourseViewCard> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => CourseDescription(
-                            //       course_id: widget.course_id,
-                            //       image: widget.image,
-                            //       title: widget.title,
-                            //       catagory: widget.catagory,
-                            //       description: widget.description,
-                            //       what_will: widget.what_will,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CourseDescription(
+                                  course_id: widget.course_id,
+                                  image: widget.image,
+                                  title: widget.title,
+                                  catagory: widget.catagory,
+                                  description: widget.description,
+                                  what_will: widget.what_will,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             alignment: Alignment.center,

@@ -1,6 +1,8 @@
 import 'package:eduapp/core/theme/appPallete.dart';
-import 'package:eduapp/features/shared/profile/presentation/student_profile.dart';
+import 'package:eduapp/features/student/home/presentation/student_home.dart';
+import 'package:eduapp/features/student/profile/presentation/pages/student_profile.dart';
 import 'package:eduapp/features/student/courses/presentation/pages/all_courses.dart';
+import 'package:eduapp/features/student/my_courses/presentation/pages/my_courses.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -23,7 +25,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const Profile(
+            builder: (context) => StudentHome(
               username: '',
               accessToken: '',
               refreshToken: '',
@@ -47,11 +49,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const Profile(
-              username: '',
-              accessToken: '',
-              refreshToken: '',
-            ),
+            builder: (context) => MyCourses(),
           ),
         );
         break;
@@ -59,7 +57,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const Profile(
+            builder: (context) => const StudentProfile(
               username: '',
               accessToken: '',
               refreshToken: '',
