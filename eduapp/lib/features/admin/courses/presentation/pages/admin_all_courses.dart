@@ -1,20 +1,17 @@
-import 'package:eduapp/core/shared/widgets/search_bar.dart';
+import 'package:eduapp/core/shared/widgets/bottom_navbar.dart';
 import 'package:eduapp/core/theme/appPallete.dart';
 import 'package:eduapp/features/admin/courses/data/dataServices/count_service.dart';
-import 'package:eduapp/features/admin/home/presentation/admin_home.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:eduapp/features/admin/courses/presentation/bloc/courses_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/courses_bloc.dart';
 import '../bloc/courses_event.dart';
 import '../bloc/courses_state.dart';
 
-class AdminCourses extends StatefulWidget {
-  const AdminCourses({
+class AdminAllCourses extends StatefulWidget {
+  const AdminAllCourses({
     Key? key,
     required this.username,
     required this.accessToken,
@@ -26,130 +23,89 @@ class AdminCourses extends StatefulWidget {
   final String refreshToken;
 
   @override
-  _AdminCoursesState createState() => _AdminCoursesState();
+  _AdminAllCoursesState createState() => _AdminAllCoursesState();
 }
 
-class _AdminCoursesState extends State<AdminCourses>
-    with SingleTickerProviderStateMixin {
-  final TextEditingController _searchController = TextEditingController();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+class _AdminAllCoursesState extends State<AdminAllCourses> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_filterCourses);
-    context.read<CourseBloc>().add(FetchCourses());
+    BlocProvider.of<AdminCourseBloc>(context).add(FetchAllCourses());
   }
 
-  @override
-  void dispose() {
-    _searchController.removeListener(_filterCourses);
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _filterCourses() {
-    final query = _searchController.text.toLowerCase();
-    context.read<CourseBloc>().add(FilterCourses(query));
+  void _onSearchChanged(String query) {
+    BlocProvider.of<AdminCourseBloc>(context).add(SearchCourses(query));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: AppPallete.background,
-      drawer: NavDrawer(),
-      appBar: AppBar(
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: AppPallete.background,
-        elevation: 0,
-        leading: IconButton(
-          icon: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Icon(Iconsax.menu_1, size: 30, color: AppPallete.black),
-          ),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: Image.asset(
-                        '/logos/logo.png',
-                        fit: BoxFit.cover,
-                      ),
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'All Courses',
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppPallete.black,
                     ),
                   ),
-                ),
-                SizedBox(width: 10),
-                Text(
-                  'All Courses',
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppPallete.black,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            CustomSearchBar(
-              controller: _searchController,
-              onChanged: (value) => _filterCourses(),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: BlocBuilder<CourseBloc, CourseState>(
-                builder: (context, state) {
-                  if (state is CourseLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is CourseLoaded) {
-                    final _filteredCourses = state.filteredCourses;
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: _filteredCourses.map((course) {
-                          return AdminCourseView(
-                            what_will: course['what_will'] ?? {},
-                            description:
-                                course['description'] ?? 'No Description',
-                            course_id: course['course_id'] ?? 0,
-                            image: course['image'] ?? '',
-                            title: course['title'] ?? 'No Title',
-                            catagory: course['catagory'] ?? 'Uncategorized',
-                          );
-                        }).toList(),
-                      ),
-                    );
-                  } else if (state is CourseError) {
-                    return Center(child: Text('Failed to load courses'));
-                  }
-                  return Container();
-                },
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              // CustomSearchBar(
+              //   controller: _searchController,
+              //   onChanged: (value) => _onSearchChanged(value),
+              // ),
+              SizedBox(height: 20),
+
+              Expanded(
+                child: BlocBuilder<AdminCourseBloc, CourseState>(
+                  builder: (context, state) {
+                    if (state is CourseLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (state is CourseLoaded) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: state.filteredCourses.map((course) {
+                            return CourseViewCard(
+                              what_will: course['what_will'] ?? {},
+                              description:
+                                  course['description'] ?? 'No Description',
+                              course_id: course['course_id'] ?? 0,
+                              image: course['image'] ?? '',
+                              title: course['title'] ?? 'No Title',
+                              catagory: course['catagory'] ?? 'Uncategorized',
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    } else if (state is CourseError) {
+                      return Center(child: Text(state.message));
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
+        bottomNavigationBar: BottomNavBar(),
       ),
     );
   }
 }
 
-class AdminCourseView extends StatefulWidget {
+class CourseViewCard extends StatefulWidget {
   final int course_id;
   final String description;
   final String image;
@@ -157,7 +113,7 @@ class AdminCourseView extends StatefulWidget {
   final String catagory;
   final Map<String, dynamic> what_will;
 
-  const AdminCourseView({
+  const CourseViewCard({
     required this.course_id,
     required this.image,
     required this.title,
@@ -168,10 +124,10 @@ class AdminCourseView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AdminCourseView> createState() => _AdminCourseViewState();
+  State<CourseViewCard> createState() => _CourseViewCardState();
 }
 
-class _AdminCourseViewState extends State<AdminCourseView> {
+class _CourseViewCardState extends State<CourseViewCard> {
   int materialCount = 0;
 
   @override
@@ -191,13 +147,13 @@ class _AdminCourseViewState extends State<AdminCourseView> {
             materialCount = response;
           });
         } else {
-          throw Exception('Material count is not an integer');
+          throw Exception('Student count is not an integer');
         }
       } else {
         throw Exception('Response is null');
       }
     } catch (e) {
-      print('Error fetching material count: $e');
+      print('Error fetching student count: $e');
     }
   }
 
@@ -320,7 +276,7 @@ class _AdminCourseViewState extends State<AdminCourseView> {
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(
-                            //     builder: (context) => AdminCourseDescription(
+                            //     builder: (context) => CourseDescription(
                             //       course_id: widget.course_id,
                             //       image: widget.image,
                             //       title: widget.title,
@@ -355,6 +311,96 @@ class _AdminCourseViewState extends State<AdminCourseView> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class HorizontalListview extends StatefulWidget {
+  const HorizontalListview({
+    Key? key,
+    required this.username,
+    required this.accessToken,
+    required this.refreshToken,
+    required this.selectedCategory,
+    required this.onSelectCategory,
+  }) : super(key: key);
+
+  final String username;
+  final String accessToken;
+  final String refreshToken;
+  final String selectedCategory;
+  final ValueChanged<String> onSelectCategory;
+
+  @override
+  _HorizontalListviewState createState() => _HorizontalListviewState();
+}
+
+class _HorizontalListviewState extends State<HorizontalListview> {
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _categories.map((category) {
+                final isSelected = category == widget.selectedCategory;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: GestureDetector(
+                    onTap: () => widget.onSelectCategory(category),
+                    child: CategoryChip(
+                      label: category,
+                      isSelected: isSelected,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CategoryChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+
+  const CategoryChip({
+    Key? key,
+    required this.label,
+    this.isSelected = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: isSelected ? AppPallete.blue : AppPallete.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppPallete.blue, width: 2),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: isSelected ? AppPallete.white : AppPallete.blue,
         ),
       ),
     );

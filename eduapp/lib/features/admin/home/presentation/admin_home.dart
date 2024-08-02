@@ -1,4 +1,5 @@
 import 'package:eduapp/core/theme/appPallete.dart';
+import 'package:eduapp/features/admin/courses/presentation/pages/admin_all_courses.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/count_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/course_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/student_service.dart';
@@ -367,14 +368,14 @@ class _NavDrawerState extends State<NavDrawer> {
                       destination: AdminHome(
                           username: '', accessToken: '', refreshToken: ''),
                     );
-                  // case 1:
-                  //   return _buildListTile(
-                  //     index: 1,
-                  //     icon: Iconsax.book,
-                  //     title: 'Courses',
-                  //     destination: AdminCourses(
-                  //         username: '', accessToken: '', refreshToken: ''),
-                  //   );
+                  case 1:
+                    return _buildListTile(
+                      index: 1,
+                      icon: Iconsax.book,
+                      title: 'Courses',
+                      destination: AdminAllCourses(
+                          username: '', accessToken: '', refreshToken: ''),
+                    );
                   // case 2:
                   //   return _buildListTile(
                   //     index: 2,

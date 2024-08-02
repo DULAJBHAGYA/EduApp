@@ -1,12 +1,13 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:eduapp/features/student/courses/data/dataSources/course_service.dart';
 import 'course_event.dart';
 import 'course_state.dart';
 
 class CourseBloc extends Bloc<CourseEvent, CourseState> {
-  CourseBloc() : super(CourseInitial()) {
+  CourseBloc()
+      : super(
+          CourseInitial(),
+        ) {
     on<FetchCourses>(_onFetchCourses);
     on<SearchCourses>(_onSearchCourses);
     on<SelectCategory>(_onSelectCategory);
@@ -14,12 +15,21 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
 
   Future<void> _onFetchCourses(
       FetchCourses event, Emitter<CourseState> emit) async {
-    emit(CourseLoading());
+    emit(
+      CourseLoading(),
+    );
     try {
       final courses = await CourseService.instance.fetchAllCourses();
-      emit(CourseLoaded(courses ?? [], courses ?? []));
+      emit(
+        CourseLoaded(
+          courses ?? [],
+          courses ?? [],
+        ),
+      );
     } catch (e) {
-      emit(CourseError('Failed to fetch courses'));
+      emit(
+        CourseError('Failed to fetch courses'),
+      );
     }
   }
 
@@ -42,7 +52,10 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
         return event.category == 'ALL COURSES' ||
             category == event.category.toLowerCase();
       }).toList();
-      emit(CourseLoaded(loadedState.courses, filteredCourses));
+      emit(CourseLoaded(
+        loadedState.courses,
+        filteredCourses,
+      ));
     }
   }
 }

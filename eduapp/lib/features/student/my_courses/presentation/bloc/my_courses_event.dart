@@ -6,6 +6,8 @@ abstract class MyCoursesEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchOngoingCourses extends MyCoursesEvent {}
+class FetchOngoingCourses extends MyCoursesEvent {
+  add(FetchCompletedCourses fetchCompletedCourses) {}
+}
 
 class FetchCompletedCourses extends MyCoursesEvent {}

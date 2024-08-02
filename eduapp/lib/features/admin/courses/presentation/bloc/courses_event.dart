@@ -7,13 +7,22 @@ abstract class CourseEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class FetchCourses extends CourseEvent {}
+class FetchAllCourses extends CourseEvent {}
 
-class FilterCourses extends CourseEvent {
+class SearchCourses extends CourseEvent {
   final String query;
 
-  const FilterCourses(this.query);
+  const SearchCourses(this.query);
 
   @override
   List<Object> get props => [query];
+}
+
+class SelectCategory extends CourseEvent {
+  final String category;
+
+  const SelectCategory(this.category);
+
+  @override
+  List<Object> get props => [category];
 }

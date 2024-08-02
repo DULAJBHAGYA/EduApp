@@ -7,13 +7,15 @@ abstract class CourseState extends Equatable {
   List<Object> get props => [];
 }
 
+class CourseInitial extends CourseState {}
+
 class CourseLoading extends CourseState {}
 
 class CourseLoaded extends CourseState {
   final List<dynamic> courses;
   final List<dynamic> filteredCourses;
 
-  const CourseLoaded(this.courses, {this.filteredCourses = const []});
+  const CourseLoaded(this.courses, this.filteredCourses);
 
   @override
   List<Object> get props => [courses, filteredCourses];
