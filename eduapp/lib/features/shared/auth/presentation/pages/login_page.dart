@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:eduapp/core/theme/appPallete.dart';
-import 'package:eduapp/features/admin/home/presentation/admin_home.dart';
+import 'package:eduapp/features/admin/home/presentation/pages/admin_home.dart';
 import 'package:eduapp/features/shared/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eduapp/features/student/home/presentation/student_home.dart';
 import 'package:flutter/material.dart';

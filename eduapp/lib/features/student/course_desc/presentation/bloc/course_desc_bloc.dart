@@ -12,7 +12,6 @@ class CourseDescriptionBloc
     extends Bloc<CourseDescriptionEvent, CourseDescriptionState> {
   CourseDescriptionBloc() : super(CourseDescriptionState());
 
-  @override
   Stream<CourseDescriptionState> mapEventToState(
       CourseDescriptionEvent event) async* {
     if (event is FetchCourseDetails) {

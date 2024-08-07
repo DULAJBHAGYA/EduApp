@@ -1,9 +1,12 @@
 import 'package:eduapp/core/theme/appPallete.dart';
+import 'package:eduapp/features/admin/add_courses/presentation/pages/add_courses.dart';
+import 'package:eduapp/features/admin/admin_profile/presentation/pages/admin_profile.dart';
 import 'package:eduapp/features/admin/courses/presentation/pages/admin_all_courses.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/count_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/course_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/student_service.dart';
 import 'package:eduapp/features/shared/auth/data/dataSources/user_services.dart';
+import 'package:eduapp/features/shared/auth/presentation/pages/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -376,14 +379,14 @@ class _NavDrawerState extends State<NavDrawer> {
                       destination: AdminAllCourses(
                           username: '', accessToken: '', refreshToken: ''),
                     );
-                  // case 2:
-                  //   return _buildListTile(
-                  //     index: 2,
-                  //     icon: Iconsax.book_saved,
-                  //     title: 'Add Courses',
-                  //     destination: AddCourses(
-                  //         username: '', accessToken: '', refreshToken: ''),
-                  //   );
+                  case 2:
+                    return _buildListTile(
+                      index: 2,
+                      icon: Iconsax.book_saved,
+                      title: 'Add Courses',
+                      destination: AddCourses(
+                          username: '', accessToken: '', refreshToken: ''),
+                    );
                   // case 3:
                   //   return _buildListTile(
                   //     index: 3,
@@ -416,21 +419,21 @@ class _NavDrawerState extends State<NavDrawer> {
                   //     destination: Admins(
                   //         username: '', accessToken: '', refreshToken: ''),
                   //   );
-                  // case 7:
-                  //   return _buildListTile(
-                  //     index: 7,
-                  //     icon: Iconsax.user,
-                  //     title: 'Profile',
-                  //     destination: AdminProfile(
-                  //         username: '', accessToken: '', refreshToken: ''),
-                  //   );
-                  // case 8:
-                  //   return _buildListTile(
-                  //     index: 8,
-                  //     icon: Iconsax.logout,
-                  //     title: 'Logout',
-                  //     destination: Login(),
-                  //   );
+                  case 7:
+                    return _buildListTile(
+                      index: 7,
+                      icon: Iconsax.user,
+                      title: 'Profile',
+                      destination: AdminProfile(
+                          username: '', accessToken: '', refreshToken: ''),
+                    );
+                  case 8:
+                    return _buildListTile(
+                      index: 8,
+                      icon: Iconsax.logout,
+                      title: 'Logout',
+                      destination: Login(),
+                    );
                   default:
                     return SizedBox.shrink();
                 }

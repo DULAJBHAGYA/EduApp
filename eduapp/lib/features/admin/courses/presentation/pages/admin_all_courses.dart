@@ -1,7 +1,9 @@
-import 'package:eduapp/core/shared/widgets/bottom_navbar.dart';
+import 'package:eduapp/core/shared/widgets/search_bar.dart';
 import 'package:eduapp/core/theme/appPallete.dart';
+import 'package:eduapp/features/admin/course_description/presentation/pages/admin_course_desc.dart';
 import 'package:eduapp/features/admin/courses/data/dataServices/count_service.dart';
 import 'package:eduapp/features/admin/courses/presentation/bloc/courses_bloc.dart';
+import 'package:eduapp/features/admin/home/presentation/pages/admin_home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +29,9 @@ class AdminAllCourses extends StatefulWidget {
 }
 
 class _AdminAllCoursesState extends State<AdminAllCourses> {
+  final TextEditingController _searchController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -38,10 +43,31 @@ class _AdminAllCoursesState extends State<AdminAllCourses> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: AppPallete.background,
+        key: _scaffoldKey,
+        drawer: NavDrawer(),
+        appBar: AppBar(
+          backgroundColor: AppPallete.background,
+          elevation: 0,
+          leading: IconButton(
+            icon: Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Icon(Iconsax.menu_1, size: 30, color: AppPallete.black),
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+          ),
+        ),
         body: Padding(
           padding: EdgeInsets.all(20),
           child: Column(
@@ -60,12 +86,11 @@ class _AdminAllCoursesState extends State<AdminAllCourses> {
                 ],
               ),
               SizedBox(height: 10),
-              // CustomSearchBar(
-              //   controller: _searchController,
-              //   onChanged: (value) => _onSearchChanged(value),
-              // ),
+              CustomSearchBar(
+                controller: _searchController,
+                onChanged: (value) => _onSearchChanged(value),
+              ),
               SizedBox(height: 20),
-
               Expanded(
                 child: BlocBuilder<AdminCourseBloc, CourseState>(
                   builder: (context, state) {
@@ -99,7 +124,6 @@ class _AdminAllCoursesState extends State<AdminAllCourses> {
             ],
           ),
         ),
-        bottomNavigationBar: BottomNavBar(),
       ),
     );
   }
@@ -273,19 +297,19 @@ class _CourseViewCardState extends State<CourseViewCard> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => CourseDescription(
-                            //       course_id: widget.course_id,
-                            //       image: widget.image,
-                            //       title: widget.title,
-                            //       catagory: widget.catagory,
-                            //       description: widget.description,
-                            //       what_will: widget.what_will,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdminCourseDescription(
+                                  course_id: widget.course_id,
+                                  image: widget.image,
+                                  title: widget.title,
+                                  catagory: widget.catagory,
+                                  description: widget.description,
+                                  what_will: widget.what_will,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -311,96 +335,6 @@ class _CourseViewCardState extends State<CourseViewCard> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class HorizontalListview extends StatefulWidget {
-  const HorizontalListview({
-    Key? key,
-    required this.username,
-    required this.accessToken,
-    required this.refreshToken,
-    required this.selectedCategory,
-    required this.onSelectCategory,
-  }) : super(key: key);
-
-  final String username;
-  final String accessToken;
-  final String refreshToken;
-  final String selectedCategory;
-  final ValueChanged<String> onSelectCategory;
-
-  @override
-  _HorizontalListviewState createState() => _HorizontalListviewState();
-}
-
-class _HorizontalListviewState extends State<HorizontalListview> {
-  List<String> _categories = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: _categories.map((category) {
-                final isSelected = category == widget.selectedCategory;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: GestureDetector(
-                    onTap: () => widget.onSelectCategory(category),
-                    child: CategoryChip(
-                      label: category,
-                      isSelected: isSelected,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CategoryChip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const CategoryChip({
-    Key? key,
-    required this.label,
-    this.isSelected = false,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: isSelected ? AppPallete.blue : AppPallete.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppPallete.blue, width: 2),
-      ),
-      child: Text(
-        label.toUpperCase(),
-        style: GoogleFonts.poppins(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: isSelected ? AppPallete.white : AppPallete.blue,
         ),
       ),
     );
