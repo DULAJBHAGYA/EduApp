@@ -1,4 +1,10 @@
+import 'package:eduapp/core/shared/widgets/nav_drawer.dart';
 import 'package:eduapp/core/theme/appPallete.dart';
+<<<<<<< Updated upstream:eduapp/lib/features/admin/home/presentation/admin_home.dart
+=======
+import 'package:eduapp/features/admin/course_delete_requests/presentation/pages/delete_requests.dart';
+
+>>>>>>> Stashed changes:eduapp/lib/features/admin/home/presentation/pages/admin_home.dart
 import 'package:eduapp/features/admin/home/data/dataSources/count_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/course_service.dart';
 import 'package:eduapp/features/admin/home/data/dataSources/student_service.dart';
@@ -120,13 +126,13 @@ class _AdminHomeState extends State<AdminHome> {
               ),
               child: GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => DeleteRequests(
-                  //             username: '',
-                  //             accessToken: '',
-                  //             refreshToken: '')));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DeleteRequests(
+                              username: '',
+                              accessToken: '',
+                              refreshToken: '')));
                 },
                 child: SizedBox(
                   width: 40,
@@ -215,6 +221,7 @@ class _AdminHomeState extends State<AdminHome> {
   }
 }
 
+<<<<<<< Updated upstream:eduapp/lib/features/admin/home/presentation/admin_home.dart
 class NavDrawer extends StatefulWidget {
   const NavDrawer({Key? key}) : super(key: key);
 
@@ -442,6 +449,8 @@ class _NavDrawerState extends State<NavDrawer> {
   }
 }
 
+=======
+>>>>>>> Stashed changes:eduapp/lib/features/admin/home/presentation/pages/admin_home.dart
 class AdminInfo extends StatelessWidget {
   final String first_name;
   final String last_name;
